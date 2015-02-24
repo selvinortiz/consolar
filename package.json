@@ -6,13 +6,12 @@
     "email": "selvin@selv.in",
     "url": "http://selv.in"
   },
-  "description": "Console utility written for PHP and Craft development",
+  "description": "Console utility helper",
   "license": "MIT",
   "main": "./index.js",
   "bin": {
-    "consolar": "./bin/consolar.js"
+    "consolar": "./cli.js"
   },
-  "preferGlobal": true,
   "scripts": {
     "start": "node ./index.js",
     "test": "mocha"
@@ -23,8 +22,8 @@
   },
   "keywords": [
     "consolar",
-    "craft",
-    "php"
+    "console",
+    "cli"
   ],
   "bugs": {
     "url": "https://github.com/selvinortiz/consolar/issues"
@@ -33,7 +32,8 @@
   "dependencies": {
     "chalk": "^1.0.0",
     "lodash": "^3.3.0",
-    "minimist": "^1.1.0"
+    "minimist": "^1.1.0",
+    "co-pwd": "*"
   },
   "devDependencies": {
     "chai": "^2.1.0",
