@@ -3,7 +3,7 @@ Utility for argument parsing and output decoration
 
 ## Features
 - Parses arguments using [minimist](https://github.com/substack/minimist)
-- Converts _long options_ to [camel case](https://lodash.com/docs#camelCase)
+- Converts _long options_ to [camelCase](https://lodash.com/docs#camelCase)
 
 ## Install
 ```sh
