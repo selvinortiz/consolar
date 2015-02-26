@@ -4,6 +4,9 @@ Utility for argument parsing and output decoration
 ## Features
 - Parses arguments using [minimist](https://github.com/substack/minimist)
 - Converts _long options_ to [camelCase](https://lodash.com/docs#camelCase)
+- Automatic display of version number (`-v, --version`)
+- Automatic display of console and command help (`-h, --help`)
+- Runs chosen command when initialize
 
 ## Install
 ```sh
