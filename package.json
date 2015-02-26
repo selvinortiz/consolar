@@ -1,18 +1,17 @@
 {
   "name": "consolar",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": {
     "name": "Selvin Ortiz",
     "email": "selvin@selv.in",
     "url": "http://selv.in"
   },
-  "description": "Console utility written for PHP and Craft development",
+  "description": "Utility for argument parsing and output decoration",
   "license": "MIT",
   "main": "./index.js",
   "bin": {
-    "consolar": "./bin/consolar.js"
+    "consolar": "./cli.js"
   },
-  "preferGlobal": true,
   "scripts": {
     "start": "node ./index.js",
     "test": "mocha"
@@ -23,8 +22,7 @@
   },
   "keywords": [
     "consolar",
-    "craft",
-    "php"
+    "console"
   ],
   "bugs": {
     "url": "https://github.com/selvinortiz/consolar/issues"
@@ -33,7 +31,8 @@
   "dependencies": {
     "chalk": "^1.0.0",
     "lodash": "^3.3.0",
-    "minimist": "^1.1.0"
+    "minimist": "^1.1.0",
+    "swig": "^1.4.2"
   },
   "devDependencies": {
     "chai": "^2.1.0",
