@@ -2,6 +2,4 @@
 
 var cli = require('./');
 
-cli.init('Consolar', '0.1.0', __dirname);
-
-console.dir(cli);
+cli.halt('Console is not a standalone utility, use require() instead.');
