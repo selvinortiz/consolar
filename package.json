@@ -6,7 +6,7 @@
     "email": "selvin@selv.in",
     "url": "http://selv.in"
   },
-  "description": "Utility for argument parsing and output decoration",
+  "description": "Simple console utility framework",
   "license": "MIT",
   "main": "./index.js",
   "bin": {
