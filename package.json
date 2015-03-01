@@ -1,6 +1,6 @@
 {
   "name": "consolar",
-  "version": "0.2.0",
+  "version": "0.3.1",
   "author": {
     "name": "Selvin Ortiz",
     "email": "selvin@selv.in",
@@ -9,9 +9,6 @@
   "description": "Simple console utility framework",
   "license": "MIT",
   "main": "./index.js",
-  "bin": {
-    "consolar": "./cli.js"
-  },
   "scripts": {
     "start": "node ./index.js",
     "test": "mocha"
