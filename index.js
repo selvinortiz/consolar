@@ -30,6 +30,7 @@ swig.setFilter('accent', function(input) {
   return chalk.green(input);
 });
 
+var hasLogged      = false;
 var prefixChar     = '-';
 var currentStep    = 1;
 var consoleCommand = '';
@@ -80,21 +81,19 @@ Consolar.prototype.init = function(config) {
     }
   });
 
-  // console.log([self.cmd, self.opts, self.args, this.shouldShowVersion(), this.shouldShowHelp(), this.shouldShowCommandHelp()]);
-
   if (this.shouldShowVersion()) {
-    console.log(this.version);
-    process.exit();
+    this.logInfo(this.version);
+    this.end();
   }
 
   if (this.shouldShowCommandHelp()) {
     this.renderCommandHelp();
-    process.exit();
+    this.end();
   }
 
   if (this.shouldShowHelp()) {
     this.renderHelp();
-    process.exit();
+    this.end();
   }
 
   this.runCommand();
@@ -133,10 +132,12 @@ Consolar.prototype.runCommand = function() {
   }
   catch(e) {
     if (e.code === 'MODULE_NOT_FOUND') {
-      this.halt('The %s command is not supported.', [this.cmd]);
+      this.logFailure('The %s command is not supported.', [this.cmd]);
     } else {
-      this.halt(e.message);
+      this.logFailure(e.message);
     }
+
+    this.halt();
   }
 };
 
@@ -160,23 +161,25 @@ Consolar.prototype.renderCommandHelp = function(data) {
   }
   catch(e) {
     if (e.code === 'MODULE_NOT_FOUND') {
-      this.halt('The %s command is not supported!', [name]);
+      this.logFailure('The %s command is not supported!', [this.cmd]);
     } else {
-      this.halt(e.message);
+      this.logFailure(e.message);
     }
+
+    this.halt();
   }
 };
 
 Consolar.prototype.shouldShowVersion = function() {
-  return lodash.has(this.opts, 'v') || lodash.has(this.opts, 'version');
+  return (lodash.has(this.opts, 'v') || lodash.has(this.opts, 'version'));
 };
 
 Consolar.prototype.shouldShowHelp = function() {
-  if ((lodash.has(this.opts, 'h') || lodash.has(this.opts, 'help')) && lodash.isEmpty(this.cmd)) {
-    return true;
+  if (this.hasConsoleCommand()) {
+    return ((lodash.has(this.opts, 'h') || lodash.has(this.opts, 'help')) && lodash.isEmpty(this.cmd));
   }
 
-  return false;
+  return (lodash.has(this.opts, 'h') || lodash.has(this.opts, 'help') || lodash.isEmpty(this.cmd));
 };
 
 Consolar.prototype.shouldShowCommandHelp = function() {
@@ -193,19 +196,19 @@ Consolar.prototype.requireArgs = function(requiredArgs) {
 
   if (!lodash.isEmpty(requiredArgs)) {
     lodash.forEach(requiredArgs, function(arg, key) {
-      try {
-        self.namedArgs[arg] = self.args[key];
-      } catch (e) {
+      if (lodash.isEmpty(self.args[key])) {
         notFound.push(arg);
+      } else {
+        self.namedArgs[arg] = self.args[key];
       }
     });
   }
 
   if (!lodash.isEmpty(notFound)) {
-    console.log(chalk.red('Not enough arguments.'));
+    this.logFailure('Missing required arguments.');
 
     lodash.forEach(notFound, function(arg, key) {
-      console.log(chalk.yellow(arg));
+      self.log('* ' + arg);
     });
 
     this.renderCommandHelp();
@@ -219,7 +222,6 @@ Consolar.prototype.requireOpts = function(which) {
   var notFound = [];
 
   if (!lodash.isEmpty(which)) {
-
     lodash.forEach(which, function(opt, key) {
       if (!lodash.has(self.opts, opt)) {
         notFound.push(opt);
@@ -228,10 +230,9 @@ Consolar.prototype.requireOpts = function(which) {
   }
 
   if (!lodash.isEmpty(notFound)) {
-    console.log(chalk.red('Options missing.'));
-
+    this.logFailure('Missing required options.');
     lodash.forEach(notFound, function(opt, key) {
-      console.log(chalk.yellow(opt));
+      self.log('* ' + opt);
     });
 
     this.renderCommandHelp();
@@ -250,34 +251,69 @@ Consolar.prototype.normalizeCommand = function(cmd) {
   return path.replace(this.commandPrefix, '');
 };
 
-Consolar.prototype.step = function(msg, data) {
+Consolar.prototype.log = function(msg, data, type) {
+  type = type || '';
 
-  this.log('\n' + currentStep + ' ' + msg + '...', data);
+  switch (type.toLowerCase()) {
+    case 'info':
+      msg = chalk.cyan(msg);
+      break;
+    case 'success':
+      msg = chalk.green(msg);
+      break;
+    case 'warning':
+      msg = chalk.yellow(msg);
+      break;
+    case 'failure':
+      msg = chalk.red(msg);
+      break;
+    case 'step':
+    default:
+      msg = msg;
+      break;
+  }
 
-  currentStep++;
-};
+  if (hasLogged === false) {
+    hasLogged = true;
+    msg = '\n' + msg;
+  }
 
-Consolar.prototype.info = function(msg, data) {
-  this.log(chalk.cyan(msg) + '\n', data);
-  process.exit();
-};
-
-Consolar.prototype.done = function(msg, data) {
-  this.log(chalk.green(msg) + '\n', data);
-  process.exit();
-};
-
-Consolar.prototype.halt = function(msg, data) {
-  this.log(chalk.red(msg) + '\n', data);
-  process.exit(1);
-};
-
-Consolar.prototype.log = function(msg, data) {
   if (lodash.isEmpty(data) || msg.indexOf('%') === -1) {
     console.log(msg);
   } else {
     console.log(msg, data);
   }
+};
+
+Consolar.prototype.logStep = function(msg, data) {
+  this.log(currentStep + ' ' + msg + '...', data, 'step');
+  currentStep++;
+};
+
+Consolar.prototype.logInfo = function(msg, data) {
+  this.log(msg, data, 'info');
+};
+
+Consolar.prototype.logSuccess = function(msg, data) {
+  this.log(msg, data, 'success');
+};
+
+Consolar.prototype.logFailure = function(msg, data) {
+  this.log(msg, data, 'failure');
+};
+
+Consolar.prototype.logWarning = function(msg, data) {
+  this.log(msg, data, 'warning');
+};
+
+Consolar.prototype.end = function(exitCode) {
+  exitCode = exitCode || 0;
+
+  process.exit(exitCode);
+};
+
+Consolar.prototype.halt = function() {
+  this.end(255);
 };
 
 // @export
