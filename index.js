@@ -128,6 +128,11 @@ Consolar.prototype.runCommand = function() {
     }
 
     cmd.init(this);
+
+    if (typeof cmd.validate === 'function') {
+      cmd.validate();
+    }
+
     cmd.run();
   }
   catch(e) {
